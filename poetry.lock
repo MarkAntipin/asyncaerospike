@@ -1,0 +1,20 @@
+[[package]]
+category = "main"
+description = "A powerful declarative symmetric parser/builder for binary data"
+name = "construct"
+optional = false
+python-versions = ">=3.6"
+version = "2.10.61"
+
+[package.extras]
+extras = ["arrow", "cloudpickle", "enum34", "lz4", "numpy", "ruamel.yaml"]
+
+[metadata]
+content-hash = "f4603a21e5b0d4f90938ffe95be0dc961f5d63eefc8eb0beef627d7a38f23c4b"
+lock-version = "1.0"
+python-versions = "^3.8"
+
+[metadata.files]
+construct = [
+    {file = "construct-2.10.61.tar.gz", hash = "sha256:d75384a04cb36ae5417dd34ce230c392e6085d872ab8a99ebd756c34bac0dff5"},
+]
