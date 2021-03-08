@@ -2,7 +2,8 @@ import asyncio
 from functools import wraps
 
 from asyncaerospike.request import (
-    Request, put_request, get_request
+    Request, put_request, get_request,
+    select_request
 )
 from asyncaerospike.response import Response
 from asyncaerospike.header import Headers
@@ -91,6 +92,23 @@ class Client:
             namespace=namespace,
             key=key,
             set_name=set_name
+        )
+        request.pack()
+        await self._send(request)
+        return await self._get_response()
+
+    async def select(
+            self,
+            namespace: str,
+            key: str,
+            bin_names: list,
+            set_name: str = None,
+    ):
+        request = select_request(
+            namespace=namespace,
+            key=key,
+            set_name=set_name,
+            bin_names=bin_names
         )
         request.pack()
         await self._send(request)

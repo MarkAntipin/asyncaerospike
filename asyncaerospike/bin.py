@@ -46,7 +46,6 @@ class Bin:
         else:
             self.data = PYTHON_TYPE_TO_AEROSPIKE_TYPE[type(data)](data=data)
 
-
     def pack(self) -> bytes:
         base = self.ENCODER.pack(self.data.TYPE, self.version, len(self.key))
         packed_data = base + self.key.encode('utf-8') + self.data.pack_data()

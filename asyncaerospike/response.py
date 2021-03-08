@@ -15,9 +15,9 @@ class Response:
 
         bins = {}
         for _ in range(base.bins_num):
-            bin = Bin.unpack(resp_data)
-            bins[bin.key] = bin.data.data
-            resp_data = resp_data[len(bin):]
+            b = Bin.unpack(resp_data)
+            bins[b.key] = b.data.data
+            resp_data = resp_data[len(b):]
 
         return cls(status_code=base.status_code, generation=base.generation, bins=bins)
 

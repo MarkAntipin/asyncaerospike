@@ -33,4 +33,3 @@ class Info3Flags(IntFlag):
     REPLACE_ONLY = 32
     SC_READ_TYPE = 64
     SC_READ_RELAX = 128
-

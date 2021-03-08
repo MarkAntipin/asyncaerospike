@@ -10,6 +10,19 @@ python = "^3.8"
 construct = "^2.10.61"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+pycycle = "^0.0.8"
+flake8-import-order = "^0.18.1"
+flake8-bugbear = "^21.3.1"
+flake8 = "^3.8.4"
+flake8-eradicate = "^1.0.0"
+flake8-builtins = "^1.5.3"
+flake8-comprehensions = "^3.3.1"
+flake8-broken-line = "^0.3.0"
+flake8-print = "^4.0.0"
+pep8-naming = "^0.11.1"
+xenon = "^0.7.1"
+flake8-unused-arguments = "^0.0.6"
 
 [build-system]
 requires = ["poetry>=0.12"]

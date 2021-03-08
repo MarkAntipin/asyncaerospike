@@ -36,7 +36,7 @@ class AerospikeDataType(ABC):
 
     @classmethod
     @abstractmethod
-    def unpack(cls, data: bytes):
+    def unpack(cls, data: bytes):  # noqa
         """Unpacks bytes to data
 
         :return self.data bytes

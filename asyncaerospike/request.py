@@ -25,7 +25,7 @@ class Request:
         info2: int,
         info3: int,
         set_name: str = None,
-        bins: dict = None,
+        bins: [dict, list] = None,
     ):
 
         self.namespace = Namespace(data=namespace)
@@ -36,9 +36,13 @@ class Request:
             self.set = None
 
         self.fields = [f for f in [self.namespace, self.set, self.key] if f]
-        self.bins = [
-            Bin(data=v, operation_type=OperationTypes.WRITE, key=k) for k, v in bins.items()
-        ] if bins else []
+
+        if isinstance(bins, dict):
+            self.bins = [Bin(data=v, operation_type=OperationTypes.WRITE, key=k) for k, v in bins.items()]
+        elif isinstance(bins, list):
+            self.bins = [Bin(operation_type=OperationTypes.READ, key=b) for b in bins]
+        else:
+            self.bins = []
 
         self.base = Base(
             info1=info1,
@@ -51,7 +55,7 @@ class Request:
     def pack(self):
         packed_base = self.base.pack()
         fields_packed = b''.join([field.pack() for field in self.fields])
-        bins_packed = b''.join([bin.pack() for bin in self.bins])
+        bins_packed = b''.join([b.pack() for b in self.bins])
         message_packed = packed_base + fields_packed + bins_packed
         headers = Headers(request_type=RequestType.MESSAGE, request_length=len(message_packed)).pack()
         return headers + message_packed
@@ -84,6 +88,23 @@ def get_request(
         key=key,
         set_name=set_name,
         info1=Info1Flags.READ | Info1Flags.GET_ALL,
+        info2=Info2Flags.EMPTY,
+        info3=Info3Flags.EMPTY,
+    )
+
+
+def select_request(
+        namespace: str,
+        key: str,
+        bin_names: list,
+        set_name: str = None,
+):
+    return Request(
+        namespace=namespace,
+        key=key,
+        set_name=set_name,
+        bins=bin_names,
+        info1=Info1Flags.READ,
         info2=Info2Flags.EMPTY,
         info3=Info3Flags.EMPTY,
     )
