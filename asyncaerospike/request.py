@@ -60,6 +60,9 @@ class Request:
         headers = Headers(request_type=RequestType.MESSAGE, request_length=len(message_packed)).pack()
         return headers + message_packed
 
+    def __repr__(self):
+        return '<Aerospike Request>'
+
 
 def put_request(
         namespace: str,

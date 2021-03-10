@@ -1,0 +1,95 @@
+STATUS_TO_ERROR = {
+    #  basic server errors
+
+    0: 'AS_OK',
+    1: 'AS_ERR_UNKNOWN',
+    2: 'AS_ERR_NOT_FOUND',
+    3: 'AS_ERR_GENERATION',
+    4: 'AS_ERR_PARAMETER',
+    5: 'AS_ERR_RECORD_EXISTS',
+    6: 'AS_ERR_BIN_EXISTS',
+    7: 'AS_ERR_CLUSTER_KEY_MISMATCH',
+    8: 'AS_ERR_OUT_OF_SPACE',
+    9: 'AS_ERR_TIMEOUT',
+    10: 'AS_ERR_ALWAYS_FORBIDDEN',
+    11: 'AS_ERR_UNAVAILABLE',
+    12: 'AS_ERR_INCOMPATIBLE_TYPE',
+    13: 'AS_ERR_RECORD_TOO_BIG',
+    14: 'AS_ERR_KEY_BUSY',
+    15: 'AS_ERR_SCAN_ABORT',
+    16: 'AS_ERR_UNSUPPORTED_FEATURE',
+    17: 'AS_ERR_BIN_NOT_FOUND',
+    18: 'AS_ERR_DEVICE_OVERLOAD',
+    19: 'AS_ERR_KEY_MISMATCH',
+    20: 'AS_ERR_NAMESPACE',
+    21: 'AS_ERR_BIN_NAME',
+    22: 'AS_ERR_FORBIDDEN',
+    23: 'AS_ERR_ELEMENT_NOT_FOUND',
+    24: 'AS_ERR_ELEMENT_EXISTS',
+    25: 'AS_ERR_ENTERPRISE_ONLY',
+    26: 'AS_ERR_OP_NOT_APPLICABLE',
+    27: 'AS_ERR_LOST_CONFLICT',
+
+    # security specific errors
+    50: 'AS_SEC_OK_LAST',
+    51: 'AS_SEC_ERR_NOT_SUPPORTED',
+    52: 'AS_SEC_ERR_NOT_ENABLED',
+    53: 'AS_SEC_ERR_SCHEME',
+    54: 'AS_SEC_ERR_COMMAND',
+    55: 'AS_SEC_ERR_FIELD',
+    56: 'AS_SEC_ERR_STATE',
+    60: 'AS_SEC_ERR_USER',
+    61: 'AS_SEC_ERR_USER_EXISTS',
+    62: 'AS_SEC_ERR_PASSWORD',
+    63: 'AS_SEC_ERR_EXPIRED_PASSWORD',
+    64: 'AS_SEC_ERR_FORBIDDEN_PASSWORD',
+    65: 'AS_SEC_ERR_CREDENTIAL',
+    66: 'AS_SEC_ERR_EXPIRED_SESSION',
+    70: 'AS_SEC_ERR_ROLE',
+    71: 'AS_SEC_ERR_ROLE_EXISTS',
+    72: 'AS_SEC_ERR_PRIVILEGE',
+    73: 'AS_SEC_ERR_WHITELIST',
+    80: 'AS_SEC_ERR_NOT_AUTHENTICATED',
+    81: 'AS_SEC_ERR_ROLE_VIOLATION',
+    82: 'AS_SEC_ERR_NOT_WHITELISTED',
+    90: 'AS_SEC_ERR_LDAP_NOT_ENABLED',
+    91: 'AS_SEC_ERR_LDAP_SETUP',
+    92: 'AS_SEC_ERR_LDAP_TLS_SETUP',
+    93: 'AS_SEC_ERR_LDAP_AUTHENTICATION',
+    94: 'AS_SEC_ERR_LDAP_QUERY',
+
+    #  UDF specific errors
+    100: 'AS_ERR_UDF_EXECUTION',
+
+    # batch specific errors
+    150: 'AS_ERR_BATCH_DISABLED',
+    151: 'AS_ERR_BATCH_MAX_REQUESTS',
+    152: 'AS_ERR_BATCH_QUEUES_FULL',
+
+    # GEO specific errors
+    160: 'AS_ERR_GEO_INVALID_GEOJSON',
+
+    # secondary index specific errors
+    200: 'AS_ERR_SINDEX_FOUND',
+    201: 'AS_ERR_SINDEX_NOT_FOUND',
+    202: 'AS_ERR_SINDEX_OOM',
+    203: 'AS_ERR_SINDEX_NOT_READABLE',
+    204: 'AS_ERR_SINDEX_GENERIC',
+    205: 'AS_ERR_SINDEX_NAME',
+    206: 'AS_ERR_SINDEX_MAX_COUNT',
+    210: 'AS_ERR_QUERY_USER_ABORT',
+    211: 'AS_ERR_QUERY_QUEUE_FULL',
+    212: 'AS_ERR_QUERY_TIMEOUT',
+    213: 'AS_ERR_QUERY_CB',
+    214: 'AS_ERR_QUERY_NET_IO',
+    215: 'AS_ERR_QUERY_DUPLICATE',
+}
+
+
+class AerospikeError(Exception):
+    """Base Aerospike Error"""
+
+    def __init__(self, status_code, message):
+        self.status_code = status_code
+        self.message = message
+        super().__init__(self.message)
