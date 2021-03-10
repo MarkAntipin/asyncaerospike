@@ -3,7 +3,7 @@ from functools import wraps
 
 from asyncaerospike.request import (
     Request, put_request, get_request,
-    select_request
+    select_request, delete_request
 )
 from asyncaerospike.response import Response
 from asyncaerospike.header import Headers
@@ -109,6 +109,21 @@ class Client:
             key=key,
             set_name=set_name,
             bin_names=bin_names
+        )
+        request.pack()
+        await self._send(request)
+        return await self._get_response()
+
+    async def delete(
+            self,
+            namespace: str,
+            key: str,
+            set_name: str = None,
+    ):
+        request = delete_request(
+            namespace=namespace,
+            key=key,
+            set_name=set_name
         )
         request.pack()
         await self._send(request)

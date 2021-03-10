@@ -111,3 +111,18 @@ def select_request(
         info2=Info2Flags.EMPTY,
         info3=Info3Flags.EMPTY,
     )
+
+
+def delete_request(
+        namespace: str,
+        key: str,
+        set_name: str = None,
+):
+    return Request(
+        namespace=namespace,
+        key=key,
+        set_name=set_name,
+        info1=Info1Flags.EMPTY,
+        info2=Info2Flags.DELETE | Info2Flags.WRITE,
+        info3=Info3Flags.EMPTY,
+    )

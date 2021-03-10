@@ -1,21 +1,101 @@
+import asyncio
 import pytest
 
 from tests.conftest import NAMESPASE, SET
+
+
+@pytest.fixture(scope='module')
+def event_loop():
+    loop = asyncio.get_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.mark.asyncio
 async def test_put_get_delete(client):
     r = await client.put(
         namespace=NAMESPASE,
-        set_name=SET,
         key='test',
         bins={'hello': 'hey'}
     )
+    assert r.is_ok is True
 
-    # r = await client.get(namespace, set_name, key)
-    # assert result["bin_to_delete"] == "test_bin_value_to_delete"
-    #
-    # await client.delete_key(namespace, set_name, key)
-    #
-    # result = await client.get_key(namespace, set_name, key)
-    # assert len(result) == 0
+    r = await client.get(
+        namespace=NAMESPASE,
+        key='test',
+    )
+    assert r.bins == {'hello': 'hey'}
+
+    r = await client.select(
+        namespace=NAMESPASE,
+        key='test',
+        bin_names=['hello']
+    )
+    assert r.bins == {'hello': 'hey'}
+
+    r = await client.select(
+        namespace=NAMESPASE,
+        key='test',
+        bin_names=['hello1']
+    )
+    assert r.bins is None
+
+    r = await client.delete(
+        namespace=NAMESPASE,
+        key='test',
+    )
+    assert r.is_ok is True
+
+    r = await client.get(
+        namespace=NAMESPASE,
+        key='test',
+    )
+    assert r.bins is None
+
+
+@pytest.mark.asyncio
+async def test_put_get_delete_with_set(client):
+    r = await client.put(
+        namespace=NAMESPASE,
+        key='test',
+        set_name=SET,
+        bins={'hello': 'hey'}
+    )
+    assert r.is_ok is True
+
+    r = await client.get(
+        namespace=NAMESPASE,
+        key='test',
+        set_name=SET,
+    )
+    assert r.bins == {'hello': 'hey'}
+
+    r = await client.select(
+        namespace=NAMESPASE,
+        key='test',
+        set_name=SET,
+        bin_names=['hello']
+    )
+    assert r.bins == {'hello': 'hey'}
+
+    r = await client.select(
+        namespace=NAMESPASE,
+        key='test',
+        set_name=SET,
+        bin_names=['hello1']
+    )
+    assert r.bins is None
+
+    r = await client.delete(
+        namespace=NAMESPASE,
+        key='test',
+        set_name=SET
+    )
+    assert r.is_ok is True
+
+    r = await client.get(
+        namespace=NAMESPASE,
+        key='test',
+        set_name=SET,
+    )
+    assert r.bins is None
