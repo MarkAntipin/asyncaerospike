@@ -1,11 +1,14 @@
 from enum import IntEnum
+from typing import List
 
 from asyncaerospike.header import Headers
 from asyncaerospike.base import Base
 from asyncaerospike.fields import (
     Namespace, Set, Key
 )
-from asyncaerospike.bin import Bin, OperationTypes
+from asyncaerospike.bin import (
+    Bin, OperationTypes, READ_OPERATIONS, WRITE_OPERATIONS
+)
 from asyncaerospike.info_flags import Info1Flags, Info2Flags, Info3Flags
 
 
@@ -26,6 +29,7 @@ class Request:
         info3: int,
         set_name: str = None,
         bins: [dict, list] = None,
+        operation_bins: List[Bin] = None
     ):
 
         self.namespace = Namespace(data=namespace)
@@ -43,6 +47,9 @@ class Request:
             self.bins = [Bin(operation_type=OperationTypes.READ, key=b) for b in bins]
         else:
             self.bins = []
+
+        if operation_bins:
+            self.bins = operation_bins
 
         self.base = Base(
             info1=info1,
@@ -125,4 +132,38 @@ def delete_request(
         info1=Info1Flags.EMPTY,
         info2=Info2Flags.DELETE | Info2Flags.WRITE,
         info3=Info3Flags.EMPTY,
+    )
+
+
+def _get_info_flag_for_operations(operation_bins: List[Bin]):
+    info1 = Info1Flags.EMPTY
+    info2 = Info2Flags.EMPTY
+    for op_bin in operation_bins:
+        if op_bin.operation_type in READ_OPERATIONS:
+            info1 = Info1Flags.READ
+            continue
+
+        if op_bin.operation_type in WRITE_OPERATIONS:
+            info2 = Info2Flags.WRITE
+            continue
+
+    return info1, info2
+
+
+def operate_request(
+        namespace: str,
+        key: str,
+        operation_bins: List[Bin],
+        set_name: str = None,
+):
+    info1, info2 = _get_info_flag_for_operations(operation_bins)
+
+    return Request(
+        namespace=namespace,
+        key=key,
+        set_name=set_name,
+        info1=info1,
+        info2=info2,
+        info3=Info3Flags.EMPTY,
+        operation_bins=operation_bins
     )

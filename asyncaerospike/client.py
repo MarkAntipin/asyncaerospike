@@ -1,12 +1,15 @@
 import asyncio
 from functools import wraps
+from typing import List
 
 from asyncaerospike.request import (
     Request, put_request, get_request,
-    select_request, delete_request
+    select_request, delete_request,
+    operate_request
 )
 from asyncaerospike.response import Response
 from asyncaerospike.header import Headers
+from asyncaerospike.bin import Bin
 
 
 def require_connection(func):
@@ -38,6 +41,10 @@ class Client:
             self.host, self.port
         )
         self._is_connected = True
+
+    async def close(self):
+        self._writer.close()
+        self._is_connected = False
 
     @property
     def host(self):
@@ -124,6 +131,23 @@ class Client:
             namespace=namespace,
             key=key,
             set_name=set_name
+        )
+        request.pack()
+        await self._send(request)
+        return await self._get_response()
+
+    async def operate(
+            self,
+            namespace: str,
+            key: str,
+            operation_bins: List[Bin],
+            set_name: str = None
+    ):
+        request = operate_request(
+            namespace=namespace,
+            key=key,
+            set_name=set_name,
+            operation_bins=operation_bins
         )
         request.pack()
         await self._send(request)

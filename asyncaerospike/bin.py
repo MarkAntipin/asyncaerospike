@@ -24,6 +24,25 @@ class OperationTypes(IntEnum):
     DELETE = 14
 
 
+READ_OPERATIONS = {
+    OperationTypes.READ,
+    OperationTypes.MAP_READ,
+    OperationTypes.CDT_READ,
+    OperationTypes.BIT_READ,
+}
+
+
+WRITE_OPERATIONS = {
+    OperationTypes.WRITE,
+    OperationTypes.CDT_MODIFY,
+    OperationTypes.INCR,
+    OperationTypes.MAP_MODIFY,
+    OperationTypes.BIT_MODIFY,
+    OperationTypes.PREPEND,
+    OperationTypes.BIT_MODIFY,
+}
+
+
 class Bin:
     """Implements Aerospike bin
     """
