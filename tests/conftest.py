@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 import asyncaerospike
@@ -13,3 +15,9 @@ async def client():
     yield client
     await client.close()
 
+
+@pytest.fixture(scope='module')
+def event_loop():
+    loop = asyncio.get_event_loop()
+    yield loop
+    loop.close()

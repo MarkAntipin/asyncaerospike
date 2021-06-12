@@ -4,13 +4,6 @@ import pytest
 from tests.conftest import NAMESPACE, SET
 
 
-@pytest.fixture(scope='module')
-def event_loop():
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
-
-
 @pytest.mark.asyncio
 async def test_put_get_delete(client):
     r = await client.put(

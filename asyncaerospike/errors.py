@@ -1,6 +1,5 @@
 STATUS_TO_ERROR = {
     #  basic server errors
-
     0: 'AS_OK',
     1: 'AS_ERR_UNKNOWN',
     2: 'AS_ERR_NOT_FOUND',
@@ -82,7 +81,7 @@ STATUS_TO_ERROR = {
     212: 'AS_ERR_QUERY_TIMEOUT',
     213: 'AS_ERR_QUERY_CB',
     214: 'AS_ERR_QUERY_NET_IO',
-    215: 'AS_ERR_QUERY_DUPLICATE',
+    215: 'AS_ERR_QUERY_DUPLICATE'
 }
 
 

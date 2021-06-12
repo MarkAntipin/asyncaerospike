@@ -1,5 +1,6 @@
 from enum import IntEnum
-from typing import List
+from typing import List, Union
+from dataclasses import dataclass
 
 from asyncaerospike.header import Headers
 from asyncaerospike.base import Base
@@ -19,9 +20,7 @@ class RequestType(IntEnum):
     COMPRESSED = 4
 
 
-class Request:
-    def __init__(
-        self,
+def _create_request(
         namespace: str,
         key: str,
         info1: int,
@@ -30,38 +29,55 @@ class Request:
         set_name: str = None,
         bins: [dict, list] = None,
         operation_bins: List[Bin] = None
-    ):
+):
+    namespace = Namespace(data=namespace)
+    key = Key(data=key, set_name=set_name)
 
-        self.namespace = Namespace(data=namespace)
-        self.key = Key(data=key, set_name=set_name)
-        if set_name:
-            self.set = Set(data=set_name)
-        else:
-            self.set = None
+    set = None
+    if set_name:
+        set = Set(data=set_name)
 
-        self.fields = [f for f in [self.namespace, self.set, self.key] if f]
+    fields = [f for f in [namespace, set, key] if f]
 
-        if isinstance(bins, dict):
-            self.bins = [Bin(data=v, operation_type=OperationTypes.WRITE, key=k) for k, v in bins.items()]
-        elif isinstance(bins, list):
-            self.bins = [Bin(operation_type=OperationTypes.READ, key=b) for b in bins]
-        else:
-            self.bins = []
+    if isinstance(bins, dict):
+        bins = [Bin(data=v, operation_type=OperationTypes.WRITE, key=k) for k, v in bins.items()]
+    elif isinstance(bins, list):
+        bins = [Bin(operation_type=OperationTypes.READ, key=b) for b in bins]
+    else:
+        bins = []
 
-        if operation_bins:
-            self.bins = operation_bins
+    if operation_bins:
+        bins = operation_bins
 
-        self.base = Base(
-            info1=info1,
-            info2=info2,
-            info3=info3,
-            fields_num=len(self.fields),
-            bins_num=len(self.bins)
-        )
+    base = Base(
+        info1=info1,
+        info2=info2,
+        info3=info3,
+        fields_num=len(fields),
+        bins_num=len(bins)
+    )
+    return Request(
+        namespace=namespace,
+        key=key,
+        fields=fields,
+        bins=bins,
+        base=base,
+        set=set,
+    )
+
+
+@dataclass
+class Request:
+    namespace: Namespace
+    key: Key
+    fields: List[Union[Namespace, Key, Key]]
+    bins: List[Union[None, Bin]]
+    base: Base
+    set: [Set, None] = None
 
     def pack(self):
         packed_base = self.base.pack()
-        fields_packed = b''.join([field.pack() for field in self.fields])
+        fields_packed = b''.join([f.pack() for f in self.fields])
         bins_packed = b''.join([b.pack() for b in self.bins])
         message_packed = packed_base + fields_packed + bins_packed
         headers = Headers(request_type=RequestType.MESSAGE, request_length=len(message_packed)).pack()
@@ -77,7 +93,7 @@ def put_request(
         bins: dict,
         set_name: str = None,
 ):
-    return Request(
+    return _create_request(
         namespace=namespace,
         key=key,
         bins=bins,
@@ -93,7 +109,7 @@ def get_request(
         key: str,
         set_name: str = None,
 ):
-    return Request(
+    return _create_request(
         namespace=namespace,
         key=key,
         set_name=set_name,
@@ -109,7 +125,7 @@ def select_request(
         bin_names: list,
         set_name: str = None,
 ):
-    return Request(
+    return _create_request(
         namespace=namespace,
         key=key,
         set_name=set_name,
@@ -125,7 +141,7 @@ def delete_request(
         key: str,
         set_name: str = None,
 ):
-    return Request(
+    return _create_request(
         namespace=namespace,
         key=key,
         set_name=set_name,
@@ -158,7 +174,7 @@ def operate_request(
 ):
     info1, info2 = _get_info_flag_for_operations(operation_bins)
 
-    return Request(
+    return _create_request(
         namespace=namespace,
         key=key,
         set_name=set_name,
